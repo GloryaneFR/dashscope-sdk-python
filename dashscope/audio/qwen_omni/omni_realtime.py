@@ -216,6 +216,7 @@ class OmniRealtimeConversation:
                        turn_detection_param: dict = None,
                        translation_params: TranslationParams = None,
                        transcription_params: TranscriptionParams = None,
+                       instructions: str = None,
                        **kwargs) -> None:
         '''
         update session configuration, should be used before create response
@@ -245,6 +246,8 @@ class OmniRealtimeConversation:
             transcription params, include language, sample_rate, input_audio_format, corpus.
             Only effective with qwen3-asr-flash-realtime model or
             further models. Do not set this parameter for other models.
+        instructions: str
+            The system message that sets the goal or role for the model.
         '''
         self.config = {
             'modalities': [m.value for m in output_modalities],
@@ -290,6 +293,8 @@ class OmniRealtimeConversation:
                 self.config['input_audio_transcription'].update({'corpus': transcription_params.corpus})
             self.config['input_audio_format'] = transcription_params.input_audio_format
             self.config['sample_rate'] = transcription_params.sample_rate
+        if instructions is not None:
+            self.config['instructions'] = instructions
         self.config.update(kwargs)
         self.__send_str(
             json.dumps({
